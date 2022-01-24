@@ -1,4 +1,5 @@
 const AWS=require('aws-sdk')
+
 const{v4:uuidv4}=require('uuid')
 
 
@@ -17,7 +18,7 @@ exports.addProduct=async(params)=>{
         TableName: table,
         Item:{
            
-            productId: params.productId,
+            productId: uuidv4(),
             stock: params.stock,
             productName: params.productName,
             isDiscount: params.isDiscount,
@@ -83,3 +84,61 @@ exports.getSingleProduct=async(params)=>{
          }
      }
 }
+
+
+exports.updateProductStock=async(params)=>{
+    var items={
+        TableName:table,
+        Key:{
+            "productId":params.productId
+        },
+        UpdateExpression:"set stock = :s",
+        ExpressionAttributeValues:{
+            
+            ":s":params.stock
+        },
+        ReturnValues:"UPDATED_NEW"
+    };
+   
+    try {
+        const data=await docClient.update(items).promise()
+        return{
+            status:true,
+            data:data
+        }
+     } catch (err) {
+         return{
+            status:false,
+            message:err
+
+         }
+     }
+    
+}
+// isDiscount varsa delete işlemi gerçekleşmeyecek, hata döndürecek
+exports.deleteProduct=async(params)=>{
+    var items={
+        TableName:table,
+        Key:{
+            "productId":params.productId
+        },
+        ConditionExpression:"isDiscount = :val",
+        ExpressionAttributeValues: {
+            ":val": "false"
+        }
+    };
+    try {
+        const data=await docClient.delete(items).promise()
+        return{
+            status:true,
+            data:data
+        }
+     } catch (err) {
+         return{
+            status:false,
+            message:err
+
+         }
+     }
+}
+
