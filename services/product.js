@@ -60,3 +60,26 @@ exports.getAllProduct=async()=>{
          }
      }
 }
+
+exports.getSingleProduct=async(params)=>{
+    var items={
+        TableName:table,
+        Key:{
+            productId:params.productId
+        }
+        
+    }
+     try {
+        const data=await docClient.get(items).promise()
+        return{
+            status:true,
+            data:data
+        }
+     } catch (err) {
+         return{
+            status:false,
+            message:err
+
+         }
+     }
+}

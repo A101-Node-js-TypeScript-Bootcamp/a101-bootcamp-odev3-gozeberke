@@ -9,3 +9,8 @@ exports.addProduct= async(req,res)=>{
     res.send(response)
     
  }
+ exports.getSingleProduct= async(req,res)=>{
+   const response =await productService.getSingleProduct(req.params)
+   res.send(response)
+   
+}
